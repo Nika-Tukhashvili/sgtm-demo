@@ -96,9 +96,13 @@ async function proxyToSGTM(request, url, stripMetricsPrefix) {
     : url.pathname;
   const targetUrl = new URL(path + url.search, SGTM_ORIGIN);
 
+  const headers = new Headers(request.headers);
+  headers.set('Host', new URL(SGTM_ORIGIN).host);
+  headers.set('X-Forwarded-Host', url.hostname);
+
   const sgtmRequest = new Request(targetUrl.toString(), {
     method:  request.method,
-    headers: request.headers,
+    headers: headers,
     body:    request.body,
     redirect: 'follow',
   });

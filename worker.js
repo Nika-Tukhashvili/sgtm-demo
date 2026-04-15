@@ -11,6 +11,7 @@
  *   /gtd             → GTG   (gtag dependency bundle)
  *   /metrics/*       → sGTM  (prefix stripped — collection hits via transport_url)
  *   /g/collect       → sGTM  (GA4 default collection path)
+ *   /gtm/*           → sGTM  (server container debug/preview)
  *   *                → Cloudflare Pages (frontend)
  */
 
@@ -46,6 +47,10 @@ export default {
     }
 
     if (isSGTMCollectPath(url)) {
+      return proxyToSGTM(request, url, false);
+    }
+
+    if (path.startsWith('/gtm/')) {
       return proxyToSGTM(request, url, false);
     }
 

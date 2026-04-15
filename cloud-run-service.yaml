@@ -1,0 +1,35 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: sgtm-demo
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/invoker-iam-disabled: "true"
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: "3"
+        autoscaling.knative.dev/minScale: "0"
+        run.googleapis.com/sessionAffinity: "false"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+        - image: gcr.io/cloud-tagging-10302018/gtm-cloud-image:stable
+          ports:
+            - containerPort: 8080
+              name: http1
+          env:
+            - name: CONTAINER_CONFIG
+              value: "aWQ9R1RNLVQ5MlhRMks1JmVudj0xJmF1dGg9czIxM2twRE94NkhVWjlzeFdCdk5pUQ=="
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          startupProbe:
+            tcpSocket:
+              port: 8080
+            periodSeconds: 240
+            timeoutSeconds: 240
+            failureThreshold: 1
